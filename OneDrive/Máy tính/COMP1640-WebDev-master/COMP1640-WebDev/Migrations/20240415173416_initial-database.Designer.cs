@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace COMP1640_WebDev.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240418155437_Initial_database")]
-    partial class Initial_database
+    [Migration("20240415173416_initial-database")]
+    partial class initialdatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -171,9 +171,6 @@ namespace COMP1640_WebDev.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AcademicYearId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<byte[]>("CoverImage")
                         .IsRequired()
                         .IsUnicode(true)
@@ -191,8 +188,6 @@ namespace COMP1640_WebDev.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AcademicYearId");
 
                     b.HasIndex("FacultyId");
 
@@ -283,7 +278,6 @@ namespace COMP1640_WebDev.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -532,15 +526,9 @@ namespace COMP1640_WebDev.Migrations
 
             modelBuilder.Entity("COMP1640_WebDev.Models.Magazine", b =>
                 {
-                    b.HasOne("COMP1640_WebDev.Models.AcademicYear", "AcademicYear")
-                        .WithMany("Magazines")
-                        .HasForeignKey("AcademicYearId");
-
                     b.HasOne("COMP1640_WebDev.Models.Faculty", "Faculty")
                         .WithMany()
                         .HasForeignKey("FacultyId");
-
-                    b.Navigation("AcademicYear");
 
                     b.Navigation("Faculty");
                 });
@@ -622,11 +610,6 @@ namespace COMP1640_WebDev.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("COMP1640_WebDev.Models.AcademicYear", b =>
-                {
-                    b.Navigation("Magazines");
                 });
 
             modelBuilder.Entity("COMP1640_WebDev.Models.Faculty", b =>

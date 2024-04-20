@@ -3,7 +3,6 @@ using COMP1640_WebDev.Models;
 using COMP1640_WebDev.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol;
 
 namespace COMP1640_WebDev.Repositories
 {
@@ -17,13 +16,32 @@ namespace COMP1640_WebDev.Repositories
         }
         public async Task<Contribution> CreateContribution(Contribution contribution)
         {
-         
-          
-                var result = await _dbContext.Contributions.AddAsync(contribution);
+            var academicYear = await _dbContext.AcademicYears.SingleOrDefaultAsync(a => a.Id == contribution.AcademicYearId);
+
+            if (contribution.SubmissionDate > academicYear.ClosureDate)
+            {
+                return null;
+            }
+            else 
+            {
+                Contribution contributionToCreate = new()
+                {
+                    Title = contribution.Title,
+                    Document = contribution.Document,
+                    Image = contribution.Image,
+                    SubmissionDate = contribution.SubmissionDate,
+                    AcademicYearId = contribution.AcademicYearId,
+                    UserId = contribution.UserId,
+                    IsEnabled = contribution.IsEnabled,
+                    IsSelected = contribution.IsSelected,
+                    Comment = contribution.Comment,
+                    CommentDate = contribution.CommentDate,
+                };
+                var result = await _dbContext.Contributions.AddAsync(contributionToCreate);
                 await _dbContext.SaveChangesAsync();
 
                 return result.Entity;
-            
+            }
                        
         }
 
@@ -48,11 +66,6 @@ namespace COMP1640_WebDev.Repositories
 
         }
 
-        public async Task<IEnumerable<Contribution>> GetContributionsInprogess()
-        {
-            return await _dbContext.Contributions.Where(c => c.Status == Enum.BrowserComment.InProgess).ToListAsync();
-
-        }
         public Task<Contribution> RemoveContribution(string idContribution)
         {
             throw new NotImplementedException();

@@ -9,9 +9,9 @@ namespace COMP1640_WebDev.Models
         public string Id { get; set; } = Guid.NewGuid().ToString();
         [Required(ErrorMessage = "Faculty can not be null")]
         [StringLength(255)]
-        public required string FacultyName { get; set; }
+        public string FacultyName { get; set; } = string.Empty;
         public List<User>? Users { get; set; }
-        public List<Magazine>? Magazines { get; set;}
+        public List<AcademicYear>? AcademicYears { get; set; }  
 
     }
 

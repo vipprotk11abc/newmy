@@ -17,7 +17,7 @@ namespace COMP1640_WebDev.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -30,6 +30,10 @@ namespace COMP1640_WebDev.Migrations
                     b.Property<DateTime>("ClosureDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FacultyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("FinalDate")
                         .HasColumnType("datetime2");
 
@@ -37,6 +41,8 @@ namespace COMP1640_WebDev.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FacultyId");
 
                     b.ToTable("AcademicYears");
                 });
@@ -70,9 +76,6 @@ namespace COMP1640_WebDev.Migrations
 
                     b.Property<bool>("IsSelected")
                         .HasColumnType("bit");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("SubmissionDate")
                         .HasColumnType("datetime2");
@@ -165,10 +168,6 @@ namespace COMP1640_WebDev.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AcademicYearId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<byte[]>("CoverImage")
                         .IsRequired()
                         .IsUnicode(true)
@@ -178,7 +177,6 @@ namespace COMP1640_WebDev.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FacultyId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Title")
@@ -187,8 +185,6 @@ namespace COMP1640_WebDev.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AcademicYearId");
 
                     b.HasIndex("FacultyId");
 
@@ -279,7 +275,6 @@ namespace COMP1640_WebDev.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -498,6 +493,17 @@ namespace COMP1640_WebDev.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("COMP1640_WebDev.Models.AcademicYear", b =>
+                {
+                    b.HasOne("COMP1640_WebDev.Models.Faculty", "Faculty")
+                        .WithMany("AcademicYears")
+                        .HasForeignKey("FacultyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Faculty");
+                });
+
             modelBuilder.Entity("COMP1640_WebDev.Models.Contribution", b =>
                 {
                     b.HasOne("COMP1640_WebDev.Models.AcademicYear", "AcademicYear")
@@ -517,19 +523,9 @@ namespace COMP1640_WebDev.Migrations
 
             modelBuilder.Entity("COMP1640_WebDev.Models.Magazine", b =>
                 {
-                    b.HasOne("COMP1640_WebDev.Models.AcademicYear", "AcademicYear")
-                        .WithMany("Magazines")
-                        .HasForeignKey("AcademicYearId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("COMP1640_WebDev.Models.Faculty", "Faculty")
-                        .WithMany("Magazines")
-                        .HasForeignKey("FacultyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AcademicYear");
+                        .WithMany()
+                        .HasForeignKey("FacultyId");
 
                     b.Navigation("Faculty");
                 });
@@ -613,14 +609,9 @@ namespace COMP1640_WebDev.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("COMP1640_WebDev.Models.AcademicYear", b =>
-                {
-                    b.Navigation("Magazines");
-                });
-
             modelBuilder.Entity("COMP1640_WebDev.Models.Faculty", b =>
                 {
-                    b.Navigation("Magazines");
+                    b.Navigation("AcademicYears");
 
                     b.Navigation("Users");
                 });

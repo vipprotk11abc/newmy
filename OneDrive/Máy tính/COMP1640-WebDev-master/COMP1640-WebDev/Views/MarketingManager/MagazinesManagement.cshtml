@@ -1,6 +1,4 @@
-﻿@model IEnumerable<Magazine>
-
-@{
+﻿@{
     Layout = "./Layout/_MMLayout";
 }
 
@@ -38,25 +36,6 @@
     <div class="mb-3">
         <h1 class="admin-heading">Magazines Management</h1>
     </div>
-    <div class="row mb-3">
-        <div class="col col-lg-8">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search">
-        </div>
-        <div class="col col-lg-2">
-            <select id="searchAttribute" class="form-select">
-                <option value="ID">ID</option>
-                <option value="Semeter">Semeter</option>
-                <option value="Title">Title</option>
-                <option value="Image">Image</option>
-            </select>
-        </div>
-        <div class="col col-lg-2 d-flex justify-content-end">
-            <button id="searchButton" class="btn btn-secondary w-100">
-                <i class="bi bi-search me-2"></i>
-                Search
-            </button>
-        </div>
-    </div>
 
 
     <div class="d-flex justify-content-end mb-3">
@@ -75,27 +54,15 @@
             <table class="table table-3d table-striped">
                 <thead>
                     <tr>
+                        <th>ID</th>
+                        <th>Image</th>
                         <th>Title</th>
-                        <th>Faculty</th>
                         <th>Semeter</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var magazine in Model)
-                    {
-                        <tr>
-                            <th scope="row" hidden>@magazine.Id</th>
-                            <td>@magazine.Title</td>
-                            <td>@magazine.FacultyId</td>
-                            <td>@magazine.AcademicYearId</td>
-                            <td class="d-flex justify-content-center">
-                                <a class="btn btn-primary me-3" asp-controller="MarketingManager" asp-action="DetailsMagazine" asp-route-id=@magazine.Id ><i class="bi bi-info-circle me-2"></i>Details</a>
-                                <a class="btn btn-primary me-3" asp-controller="MarketingManager" asp-action="EditMagazine" asp-route-id=@magazine.Id><i class="bi bi-pencil-square me-2"></i>Edit</a>
-                                <button class="btn btn-danger delete-faculty" data-faculty-id="" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="bi bi-trash me-2"></i>Delete</button>
-                            </td>
-                        </tr>
-                    }
+                   
                 </tbody>
             </table>
         </div>

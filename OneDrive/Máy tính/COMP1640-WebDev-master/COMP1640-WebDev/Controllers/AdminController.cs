@@ -4,25 +4,31 @@ using COMP1640_WebDev.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace COMP1640_WebDev.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class AdminController(IFacultyRepository facultyRepository, IUserRepository userRepository, IAcademicYearRepository academicYearRepository, IContributionRepository contributionRepository) : Controller
+    public class AdminController : Controller
     {
-        private readonly IFacultyRepository _facultyRepository = facultyRepository;
-        private readonly IUserRepository _userRepository = userRepository;
-        private readonly IAcademicYearRepository _academicYearRepository = academicYearRepository;
-        private readonly IContributionRepository _contributionRepository = contributionRepository;
-
-		public async Task<IActionResult> IndexAsync()
+        private readonly IFacultyRepository _facultyRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IAcademicYearRepository _academicYearRepository;
+        public AdminController(IFacultyRepository facultyRepository, IUserRepository userRepository, IAcademicYearRepository academicYearRepository)
         {
-            var facultiesData = new int[] { 30, 20, 10 };
-            int[] usersData = await _userRepository.GetUserCounts();
-            var semestersData = new int[] { 20, 15, 25 };
+            _facultyRepository = facultyRepository;
+            _userRepository = userRepository;
+            _academicYearRepository = academicYearRepository;
+        }
 
+        //1. Index Methods
+        public async Task<IActionResult> IndexAsync()
+        {
+            // Retrieve dynamic data from the database or any other source
+            var facultiesData = new int[] { 30, 20, 10 }; // Sample data, replace with actual data
+            int[] usersData = await _userRepository.GetUserCounts();
+            var semestersData = new int[] { 20, 15, 25 }; // Sample data, replace with actual data
+
+            // Pass the data to the view
             ViewBag.FacultiesData = facultiesData;
             ViewBag.UsersData = usersData;
             ViewBag.SemestersData = semestersData;
@@ -30,6 +36,8 @@ namespace COMP1640_WebDev.Controllers
             return View();
         }
 
+   
+        //2. Account Management Methods
         [HttpGet]
         public IActionResult AccountsManagement()
         {
@@ -92,6 +100,10 @@ namespace COMP1640_WebDev.Controllers
             return RedirectToAction("AccountsManagement");
         }
 
+
+
+
+        //3. Faculty Management Methods
         [HttpGet]
         public async Task<IActionResult> FacultiesManagement()
         {
@@ -166,6 +178,7 @@ namespace COMP1640_WebDev.Controllers
             return RedirectToAction("FacultiesManagement");
         }
 
+        //3. Semesters Management Methods
         [HttpGet]
         public async Task<IActionResult> SemestersManagement()
         {
@@ -176,17 +189,17 @@ namespace COMP1640_WebDev.Controllers
         [HttpGet]
         public IActionResult CreateSemester()
         {
-            
-            return View();
+            var semesterViewModel = _academicYearRepository.GetAcademicYearViewModel();
+            return View(semesterViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateSemester(AcademicYear newAcademicYear)
+        public async Task<IActionResult> CreateSemester(AcademicYearViewModel semesterViewModel)
         {
             if(ModelState.IsValid)
             {
-                await _academicYearRepository.CreateAcademicYear(newAcademicYear) ;
+                await _academicYearRepository.CreateAcademicYear(semesterViewModel) ;
                 TempData["AlertMessage"] = "Semester created successfully!!!";
                 return RedirectToAction("SemestersManagement");
             }
@@ -212,33 +225,29 @@ namespace COMP1640_WebDev.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditSemesterAsync(string id)
+        public IActionResult EditSemester(string id)
         {
-			if (id == null)
-			{
-				return NotFound();
-			}
+            var academicYear = _academicYearRepository.GetAcademicYearViewModelByID(id);
+            if (academicYear == null)
+            {
+                return NotFound();
+            }
 
-			var academicYear = await _academicYearRepository.GetAcademicYear(id);
-			if (academicYear == null)
-			{
-				return NotFound();
-			}
-
-			return View(academicYear);
+            return View(academicYear);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditSemester(string id, AcademicYear updatedAcademicYear)
+        public async Task<IActionResult> EditSemester(AcademicYearViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                await _academicYearRepository.UpdateAcademicYear(id,updatedAcademicYear);
+                await _academicYearRepository.UpdateAcademicYear(viewModel);
                 TempData["AlertMessage"] = "Semester updated successfully!!!";
                 return RedirectToAction("SemestersManagement");
             }
-            return View(updatedAcademicYear);
+            return View(viewModel);
         }
-	}
+
+    }
 }
